@@ -110,6 +110,10 @@ npx skills add yjhqwer/yjh-discipline
 
 **Manual**: copy any `skills/<name>/` folder into your agent's skills directory (`~/.claude/skills/`, `~/.agents/skills/`, …).
 
+**Or just ask your agent**: paste this to any agent with file access — *"Install the skills from github.com/yjhqwer/yjh-discipline into my agent's skills directory."*
+
+**After installing**: restart your agent — skills are scanned at startup, so a running session keeps seeing the old list. To self-check the bundled j-space suite, run `python skills/j-space/scripts/verify_suite.py`; its own README and Apache-2.0 license live inside the folder.
+
 **The watchdog rules** are not a skill — they must live in your agent's instruction file, where they are seen every session. Copy `rules-template.md` (or just the sections you need) into `AGENTS.md` / `CLAUDE.md` / `GEMINI.md`. Without them, the skills rarely fire on their own — that is failure mode #3.
 
 ## Design principles

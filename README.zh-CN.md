@@ -109,6 +109,10 @@ npx skills add yjhqwer/yjh-discipline
 
 **手动安装**：把任意 `skills/<名字>/` 文件夹复制进你 agent 的技能目录（`~/.claude/skills/`、`~/.agents/skills/` 等）。
 
+**或者直接让 agent 代装**：把这句话贴给任何一个有文件权限的 agent——"把 github.com/yjhqwer/yjh-discipline 里的技能装进我的技能目录。"
+
+**装完后**：重启你的 agent——技能是启动时扫描的，正在运行的会话看到的还是旧清单。想自检捆绑的 j-space 套件，运行 `python skills/j-space/scripts/verify_suite.py`；它自己的说明和 Apache-2.0 许可证就在技能文件夹里。
+
 **看门狗规则**不是技能——它必须写进 agent 的指令文件，每个会话才会被看到。把 `rules-template.md`（或其中你需要的章节）复制进 `AGENTS.md` / `CLAUDE.md` / `GEMINI.md`。没有这一层，技能很少会自己触发——这正是失效模式③。
 
 ## 设计原则
