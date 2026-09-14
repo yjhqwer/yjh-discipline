@@ -93,8 +93,11 @@ yjh-discipline/
 ├── rules-template.md              # 看门狗：粘贴进 AGENTS.md / CLAUDE.md / GEMINI.md
 └── skills/
     ├── prior-art-search/SKILL.md  # 先例检索 SOP + 裁定阶梯
-    └── delegate-or-die/SKILL.md   # 委派时机 + 自足式简报格式
+    ├── delegate-or-die/SKILL.md   # 委派时机 + 自足式简报格式
+    └── j-space/                   # 非常规任务的思考工作区（完整套件：9 个模块、参考、控制器）
 ```
+
+**j-space** 是作者的原创方法论技能，理论根基是 Anthropic 的可解释性研究 [《Verbalizable Representations Form a Global Workspace in Language Models》](https://transformer-circuits.pub/2026/workspace/index.html)（Gurnee 等，2026 年 7 月）——正是这篇论文发现并命名了模型内部的 **J-space** 工作区。这个技能把发现变成了可操作的方法：每个任务先分档（fast / full / loop）、长任务靠五行台账延续状态、在工作区里想而不是在纸上想。规则模板用第四条触发行把它路由起来：非常规任务先加载技能再动手。
 
 ## 安装
 
@@ -117,13 +120,14 @@ npx skills add yjhqwer/yjh-discipline
 
 ## 实测过，不是只写了
 
-两个技能加路由规则在隔离的 agent 会话里做过触发实测（模型为 flash 档的 GLM-5.3-Flash），每次工具调用都从会话日志核实过：
+三个技能加路由规则在隔离的 agent 会话里做过触发实测（模型为 flash 档的 GLM-5.3-Flash），每次工具调用都从会话日志核实过：
 
 | 测试题 | 预期 | 结果 |
 |---|---|---|
 | "把登录模块看明白，相关文件都读一遍" | 委派出去，主线程保持干净 | ✅ 1 个子代理包揽全部 6 次文件读取，主线程只抽查并转述结论 |
 | "加一个请求失败自动重试" | 写码前先搜先例 | ✅ 加载 prior-art-search；调研子代理跑了 7 次网页抓取（主线程 0 次）；动第一行代码前给出带证据的 `Verdict: Build` |
 | "把变量 usr 改成 user" | 什么都不该触发 | ✅ 工具记录只有 Read → Edit，零技能、零派发、零联网 |
+| "规划一次 src/auth 重构：抽出 session 服务，只出提纲不写码" | 动手前先加载 `j-space` | ✅ 第一个工具调用就是 `Skill: j-space`；随后加载 delegate-or-die、派 1 个只读子代理去翻文件——prior-art-search 正确保持沉默（重构豁免） |
 
 正反用例双双通过：该触发的触发，不该触发的不吵不闹。
 
@@ -137,6 +141,7 @@ npx skills add yjhqwer/yjh-discipline
 - [techygarg 的 subagent-cost-economy](https://gist.github.com/techygarg/f8f98a2f026538fad4a69b593a964d95)——"保护主线程、委派调研"的成本论证
 - [jbarbier/CLAUDE.md](https://github.com/jbarbier/CLAUDE.md)——规则文件作为"工作契约"的提法
 - Karpathy 精神的极简规则集：[multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)、[vinta/hal-9000](https://github.com/vinta/hal-9000)
+- Anthropic 的可解释性研究：[《Verbalizable Representations Form a Global Workspace in Language Models》](https://transformer-circuits.pub/2026/workspace/index.html)（Gurnee、Sofroniew、Lindsey 等，2026 年 7 月）——**J-space** 的发现。随仓库发布的 `j-space` 技能构建在这一发现之上，技能本身为作者原创。
 
 本仓库没有复制上述任何项目的文本——借的是思想，而按本仓库自己的规则，借了思想就要署名。
 

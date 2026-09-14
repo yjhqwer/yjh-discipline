@@ -94,8 +94,11 @@ yjh-discipline/
 ├── rules-template.md              # The watchdog: paste into AGENTS.md / CLAUDE.md / GEMINI.md
 └── skills/
     ├── prior-art-search/SKILL.md  # Search-before-building SOP + verdict ladder
-    └── delegate-or-die/SKILL.md   # When to delegate + the self-contained brief format
+    ├── delegate-or-die/SKILL.md   # When to delegate + the self-contained brief format
+    └── j-space/                   # A thinking workspace for non-trivial work (full suite: 9 modules, references, controller)
 ```
+
+**j-space** is the author's original methodology skill, grounded in Anthropic's interpretability research [*"Verbalizable Representations Form a Global Workspace in Language Models"*](https://transformer-circuits.pub/2026/workspace/index.html) (Gurnee et al., July 2026) — the paper that identified and named the model's internal workspace **J-space**. The skill turns that finding into a working method: classify every task into one of three passes (fast / full / loop), carry long work on a five-line ledger, and think in a workspace instead of on the page. A fourth trigger line in the rules template routes to it: non-trivial work loads the skill first.
 
 ## Install
 
@@ -118,13 +121,14 @@ npx skills add yjhqwer/yjh-discipline
 
 ## Tested, not just written
 
-The two skills plus the routing rules were trigger-tested in isolated agent sessions (GLM-5.3-Flash — a flash-tier model), with every tool call verified from session logs:
+The three skills plus the routing rules were trigger-tested in isolated agent sessions (GLM-5.3-Flash — a flash-tier model), with every tool call verified from session logs:
 
 | Test prompt | Expected | Result |
 |---|---|---|
 | "Explain the login module, read all the related files" | Delegate; main thread stays clean | ✅ 1 subagent did all 6 file reads; the main thread only spot-checked and relayed the synthesis |
 | "Add automatic retry for failed requests" | Search prior art before writing code | ✅ `prior-art-search` loaded; a research subagent ran 7 web fetches (main thread: 0); ended in an evidence-backed `Verdict: Build` before any code |
 | "Rename variable `usr` to `user`" | Nothing should fire | ✅ Tool trace is just Read → Edit. No skills, no subagents, no web calls |
+| "Plan a refactor of src/auth: extract session logic, outline only" | Load `j-space` before planning | ✅ First tool call was `Skill: j-space`; it then loaded `delegate-or-die` and sent one read-only subagent to do the file exploration — `prior-art-search` correctly stayed silent (refactors are exempt) |
 
 Positive and negative cases both pass: the skills fire when they should and stay quiet when they shouldn't.
 
@@ -138,6 +142,7 @@ This repo is an *Extend*, not a *Build* — it composes ideas the community alre
 - [techygarg's subagent-cost-economy](https://gist.github.com/techygarg/f8f98a2f026538fad4a69b593a964d95) — the "protect the main thread, delegate the research" cost argument
 - [jbarbier/CLAUDE.md](https://github.com/jbarbier/CLAUDE.md) — the rules-file-as-working-contract framing
 - Minimal rules collections in the Karpathy spirit: [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills), [vinta/hal-9000](https://github.com/vinta/hal-9000)
+- Anthropic's interpretability research, [*"Verbalizable Representations Form a Global Workspace in Language Models"*](https://transformer-circuits.pub/2026/workspace/index.html) (Gurnee, Sofroniew, Lindsey et al., July 2026) — the discovery of **J-space**. The bundled `j-space` skill builds on this finding; the skill itself is the author's original work.
 
 No text from these projects is included — what's borrowed is the ideas, and by this repo's own rules, ideas get credited.
 

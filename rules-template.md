@@ -29,6 +29,11 @@ Two parts, two jobs:
 - Skills are lazy-loaded: an installed skill does nothing until you check for it. Before starting non-trivial work, check the available skill list and load any that matches the task.
 - Standing rules belong in this file, procedures belong in skills, one-off instructions belong in the conversation. Keep each layer to its own job.
 
+### Think in a workspace, not on the page
+
+- Multi-step work, planning, complex debugging, anything that will span many turns: load the `j-space` skill first and classify the task into one of its passes before answering. Trivial requests need nothing.
+- *Full method (the workspace premise, the three passes, the ledger): the `j-space` skill.*
+
 ## Part 2 — General behavior (optional, standalone)
 
 ### Think before coding

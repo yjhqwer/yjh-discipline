@@ -36,6 +36,8 @@ Execute queries in this order, stopping early when a definitive solution is foun
 
 **Do not run this skill for**: bug fixes, refactoring, config-value edits, or purely mechanical changes. If the user says research is unnecessary, skipping is itself a decision — record a one-line verdict noting it was skipped at the user's request.
 
+**Query craft**: search in the language of the index you are querying — for international technical content that usually means English keywords, whatever the working language is. Never translate proper nouns, product names, or technical terms: query `cloudflare` as `cloudflare`, not as its translation.
+
 0. **Persistent memory & past decisions**
    - Query your long-term memory tool or check `docs/decisions/` (ADRs) first.
    - If a proven approach or verdict was previously recorded, reuse it immediately — sub-second retrieval, zero network calls.
