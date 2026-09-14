@@ -116,6 +116,18 @@ npx skills add yjhqwer/yjh-discipline
 - **Quality over budget.** Subagent briefs define the output contract, never token caps — budgets make agents timid; contracts make them precise.
 - **Status-first reporting.** Every delegated task returns `STATUS: DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT` before any content, so a failed delegation costs one line, not a wall of text.
 
+## Tested, not just written
+
+The two skills plus the routing rules were trigger-tested in isolated agent sessions (GLM-5.3-Flash — a flash-tier model), with every tool call verified from session logs:
+
+| Test prompt | Expected | Result |
+|---|---|---|
+| "Explain the login module, read all the related files" | Delegate; main thread stays clean | ✅ 1 subagent did all 6 file reads; the main thread only spot-checked and relayed the synthesis |
+| "Add automatic retry for failed requests" | Search prior art before writing code | ✅ `prior-art-search` loaded; a research subagent ran 7 web fetches (main thread: 0); ended in an evidence-backed `Verdict: Build` before any code |
+| "Rename variable `usr` to `user`" | Nothing should fire | ✅ Tool trace is just Read → Edit. No skills, no subagents, no web calls |
+
+Positive and negative cases both pass: the skills fire when they should and stay quiet when they shouldn't.
+
 ## Credits & lineage
 
 This repo is an *Extend*, not a *Build* — it composes ideas the community already proved:
