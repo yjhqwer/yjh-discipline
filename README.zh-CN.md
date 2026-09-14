@@ -122,7 +122,11 @@ npx skills add yjhqwer/yjh-discipline
 - [anthropics/skills](https://github.com/anthropics/skills)——Agent Skills 格式与生态
 - [obra/superpowers](https://github.com/obra/superpowers)——证明技能式纪律可以规模化有效（也反证了轻量的必要：本仓库只有它约 2% 的体积）
 - [shimo4228/search-first](https://github.com/shimo4228/search-first) 与 [anombyte93/claude-research-skill](https://github.com/anombyte93/claude-research-skill)——先例检索 SOP
-- Karpathy 风格极简规则集（[multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)）
+- [techygarg 的 subagent-cost-economy](https://gist.github.com/techygarg/f8f98a2f026538fad4a69b593a964d95)——"保护主线程、委派调研"的成本论证
+- [jbarbier/CLAUDE.md](https://github.com/jbarbier/CLAUDE.md)——规则文件作为"工作契约"的提法
+- Karpathy 精神的极简规则集：[multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)、[vinta/hal-9000](https://github.com/vinta/hal-9000)
+
+本仓库没有复制上述任何项目的文本——借的是思想，而按本仓库自己的规则，借了思想就要署名。
 
 "三位一体"框架——规则负责路由、技能负责方法、子代理负责执行、三者缺一不可——是本仓库的增量。
 

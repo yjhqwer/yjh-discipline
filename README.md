@@ -123,7 +123,11 @@ This repo is an *Extend*, not a *Build* — it composes ideas the community alre
 - [anthropics/skills](https://github.com/anthropics/skills) — the Agent Skills format and ecosystem
 - [obra/superpowers](https://github.com/obra/superpowers) — proof that skills-based discipline works at scale (and the case for staying lightweight: this repo is ~2% the size)
 - [shimo4228/search-first](https://github.com/shimo4228/search-first) & [anombyte93/claude-research-skill](https://github.com/anombyte93/claude-research-skill) — search-before-building SOPs
-- Karpathy-inspired minimal rules collections ([multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills))
+- [techygarg's subagent-cost-economy](https://gist.github.com/techygarg/f8f98a2f026538fad4a69b593a964d95) — the "protect the main thread, delegate the research" cost argument
+- [jbarbier/CLAUDE.md](https://github.com/jbarbier/CLAUDE.md) — the rules-file-as-working-contract framing
+- Minimal rules collections in the Karpathy spirit: [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills), [vinta/hal-9000](https://github.com/vinta/hal-9000)
+
+No text from these projects is included — what's borrowed is the ideas, and by this repo's own rules, ideas get credited.
 
 The Trinity framing — rules route, skills instruct, subagents execute, and all three are required — is the delta.
 
