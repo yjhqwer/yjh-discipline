@@ -98,7 +98,7 @@ yjh-discipline/
     └── j-space/                   # A thinking workspace for non-trivial work (full suite: 9 modules, references, controller)
 ```
 
-**j-space** is a locally modified copy of the [**J-Space Cognition Suite**](https://github.com/Tiger3807861189/J-Space-Cognition-Suite-V3.7) by Tiger3807861189 (Apache-2.0 — its `LICENSE` and `THIRD_PARTY_NOTICES.md` ship inside the skill folder). The suite turns Anthropic's J-space research (Gurnee et al., July 2026) into a working method: classify every task into one of three passes (fast / full / loop), carry long work on a five-line ledger, and think in a workspace instead of on the page. A fourth trigger line in the rules template routes to it: non-trivial work loads the skill first.
+**j-space** is a locally modified copy of the [**J-Space Cognition Suite**](https://github.com/Tiger3807861189/J-Space-Cognition-Suite) by Tiger3807861189 (Apache-2.0 — its `LICENSE` and `THIRD_PARTY_NOTICES.md` ship inside the skill folder). The suite turns Anthropic's J-space research (Gurnee et al., July 2026) into a working method: classify every task into one of three passes (fast / full / loop), carry long work on a five-line ledger, and think in a workspace instead of on the page. A fourth trigger line in the rules template routes to it: non-trivial work loads the skill first.
 
 ## Install
 
@@ -142,7 +142,7 @@ This repo is an *Extend*, not a *Build* — it composes ideas the community alre
 - [techygarg's subagent-cost-economy](https://gist.github.com/techygarg/f8f98a2f026538fad4a69b593a964d95) — the "protect the main thread, delegate the research" cost argument
 - [jbarbier/CLAUDE.md](https://github.com/jbarbier/CLAUDE.md) — the rules-file-as-working-contract framing
 - Minimal rules collections in the Karpathy spirit: [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills), [vinta/hal-9000](https://github.com/vinta/hal-9000)
-- [Tiger3807861189's J-Space Cognition Suite](https://github.com/Tiger3807861189/J-Space-Cognition-Suite-V3.7) — the bundled `j-space` skill is a locally modified copy of this suite, redistributed under its Apache-2.0 license (license and notices included in the skill folder)
+- [Tiger3807861189's J-Space Cognition Suite](https://github.com/Tiger3807861189/J-Space-Cognition-Suite) — the bundled `j-space` skill is a locally modified copy of this suite, redistributed under its Apache-2.0 license (license and notices included in the skill folder)
 - Anthropic's interpretability research, [*"Verbalizable Representations Form a Global Workspace in Language Models"*](https://transformer-circuits.pub/2026/workspace/index.html) (Gurnee, Sofroniew, Lindsey et al., July 2026) — the discovery of **J-space** that both the upstream suite and this repo build on
 
 No text from these projects is included — what's borrowed is the ideas, and by this repo's own rules, ideas get credited.

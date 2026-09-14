@@ -1,6 +1,6 @@
 # j-space
 
-This folder is a **locally modified copy** of the [**J-Space Cognition Suite**](https://github.com/Tiger3807861189/J-Space-Cognition-Suite-V3.7)
+This folder is a **locally modified copy** of the [**J-Space Cognition Suite**](https://github.com/Tiger3807861189/J-Space-Cognition-Suite)
 by **Tiger3807861189** (≈3k stars on GitHub).
 
 - **License: Apache-2.0.** `LICENSE` and `THIRD_PARTY_NOTICES.md` in this folder are included
