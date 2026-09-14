@@ -97,7 +97,7 @@ yjh-discipline/
     └── j-space/                   # 非常规任务的思考工作区（完整套件：9 个模块、参考、控制器）
 ```
 
-**j-space** 是作者的原创方法论技能，理论根基是 Anthropic 的可解释性研究 [《Verbalizable Representations Form a Global Workspace in Language Models》](https://transformer-circuits.pub/2026/workspace/index.html)（Gurnee 等，2026 年 7 月）——正是这篇论文发现并命名了模型内部的 **J-space** 工作区。这个技能把发现变成了可操作的方法：每个任务先分档（fast / full / loop）、长任务靠五行台账延续状态、在工作区里想而不是在纸上想。规则模板用第四条触发行把它路由起来：非常规任务先加载技能再动手。
+**j-space** 是 [**J-Space Cognition Suite**](https://github.com/Tiger3807861189/J-Space-Cognition-Suite-V3.7)（作者 Tiger3807861189，约 3k 星）的本地修改版副本（Apache-2.0——其 `LICENSE` 与 `THIRD_PARTY_NOTICES.md` 随技能文件夹一并附带）。这套件把 Anthropic 的 J-space 研究（Gurnee 等，2026 年 7 月）变成了可操作的方法：每个任务先分档（fast / full / loop）、长任务靠五行台账延续状态、在工作区里想而不是在纸上想。规则模板用第四条触发行把它路由起来：非常规任务先加载技能再动手。
 
 ## 安装
 
@@ -141,7 +141,8 @@ npx skills add yjhqwer/yjh-discipline
 - [techygarg 的 subagent-cost-economy](https://gist.github.com/techygarg/f8f98a2f026538fad4a69b593a964d95)——"保护主线程、委派调研"的成本论证
 - [jbarbier/CLAUDE.md](https://github.com/jbarbier/CLAUDE.md)——规则文件作为"工作契约"的提法
 - Karpathy 精神的极简规则集：[multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)、[vinta/hal-9000](https://github.com/vinta/hal-9000)
-- Anthropic 的可解释性研究：[《Verbalizable Representations Form a Global Workspace in Language Models》](https://transformer-circuits.pub/2026/workspace/index.html)（Gurnee、Sofroniew、Lindsey 等，2026 年 7 月）——**J-space** 的发现。随仓库发布的 `j-space` 技能构建在这一发现之上，技能本身为作者原创。
+- [Tiger3807861189 的 J-Space Cognition Suite](https://github.com/Tiger3807861189/J-Space-Cognition-Suite-V3.7)——随仓库发布的 `j-space` 技能是该套件的本地修改版副本，按其 Apache-2.0 许可证转发（许可证与第三方声明已附在技能文件夹内）
+- Anthropic 的可解释性研究：[《Verbalizable Representations Form a Global Workspace in Language Models》](https://transformer-circuits.pub/2026/workspace/index.html)（Gurnee、Sofroniew、Lindsey 等，2026 年 7 月）——**J-space** 的发现，上游套件与本仓库都构建在这一发现之上
 
 本仓库没有复制上述任何项目的文本——借的是思想，而按本仓库自己的规则，借了思想就要署名。
 
