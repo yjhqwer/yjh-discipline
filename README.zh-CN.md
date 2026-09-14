@@ -94,10 +94,10 @@ yjh-discipline/
 └── skills/
     ├── prior-art-search/SKILL.md  # 先例检索 SOP + 裁定阶梯
     ├── delegate-or-die/SKILL.md   # 委派时机 + 自足式简报格式
-    └── j-space/                   # 非常规任务的思考工作区（完整套件：9 个模块、参考、控制器）
+    └── j-space/                   # 非常规任务的思考工作区（上游 SV1：13 个模块、7 个参考、控制器脚本）
 ```
 
-**j-space** 是 [**J-Space Cognition Suite**](https://github.com/Tiger3807861189/J-Space-Cognition-Suite)（作者 Tiger3807861189，约 3k 星）的本地修改版副本（Apache-2.0——其 `LICENSE` 与 `THIRD_PARTY_NOTICES.md` 随技能文件夹一并附带）。这套件把 Anthropic 的 J-space 研究（Gurnee 等，2026 年 7 月）变成了可操作的方法：每个任务先分档（fast / full / loop）、长任务靠五行台账延续状态、在工作区里想而不是在纸上想。规则模板用第四条触发行把它路由起来：非常规任务先加载技能再动手。
+**j-space** 是 [**J-Space Cognition Suite**](https://github.com/Tiger3807861189/J-Space-Cognition-Suite)（作者 Tiger3807861189，3000+ 星）的原样副本，对齐上游最新发行版 SV1（2026 年 9 月；Apache-2.0——其 `LICENSE` 与 `THIRD_PARTY_NOTICES.md` 随技能文件夹一并附带）。这套件把 Anthropic 的 J-space 研究（Gurnee 等，2026 年 7 月）变成了可操作的方法：按任务强度分档、路由进 fast / full / loop 三档执行、长任务保持持久状态、在工作区里想而不是在纸上想。规则模板用第四条触发行把它路由起来：非常规任务先加载技能再动手。
 
 ## 安装
 
@@ -120,7 +120,7 @@ npx skills add yjhqwer/yjh-discipline
 
 ## 实测过，不是只写了
 
-三个技能加路由规则在隔离的 agent 会话里做过触发实测（模型为 flash 档的 GLM-5.3-Flash），每次工具调用都从会话日志核实过：
+三个技能加路由规则在隔离的 agent 会话里做过触发实测（模型为 flash 档的 GLM-5.3-Flash），每次工具调用都从会话日志核实过（j-space 一行测的是换装前的早期副本，现已替换为上游 SV1 原样版）：
 
 | 测试题 | 预期 | 结果 |
 |---|---|---|

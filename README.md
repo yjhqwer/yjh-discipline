@@ -95,10 +95,10 @@ yjh-discipline/
 └── skills/
     ├── prior-art-search/SKILL.md  # Search-before-building SOP + verdict ladder
     ├── delegate-or-die/SKILL.md   # When to delegate + the self-contained brief format
-    └── j-space/                   # A thinking workspace for non-trivial work (full suite: 9 modules, references, controller)
+    └── j-space/                   # A thinking workspace for non-trivial work (upstream SV1: 13 modules, 7 references, controller scripts)
 ```
 
-**j-space** is a locally modified copy of the [**J-Space Cognition Suite**](https://github.com/Tiger3807861189/J-Space-Cognition-Suite) by Tiger3807861189 (Apache-2.0 — its `LICENSE` and `THIRD_PARTY_NOTICES.md` ship inside the skill folder). The suite turns Anthropic's J-space research (Gurnee et al., July 2026) into a working method: classify every task into one of three passes (fast / full / loop), carry long work on a five-line ledger, and think in a workspace instead of on the page. A fourth trigger line in the rules template routes to it: non-trivial work loads the skill first.
+**j-space** is a verbatim copy of the [**J-Space Cognition Suite**](https://github.com/Tiger3807861189/J-Space-Cognition-Suite) by Tiger3807861189 (3000+ stars), tracking the current upstream release (SV1, September 2026; Apache-2.0 — its `LICENSE` and `THIRD_PARTY_NOTICES.md` ship inside the skill folder). The suite turns Anthropic's J-space research (Gurnee et al., July 2026) into a working method: grade a task's intensity, route it into one of three passes (fast / full / loop), keep durable state across long work, and think in a workspace instead of on the page. A fourth trigger line in the rules template routes to it: non-trivial work loads the skill first.
 
 ## Install
 
@@ -121,7 +121,7 @@ npx skills add yjhqwer/yjh-discipline
 
 ## Tested, not just written
 
-The three skills plus the routing rules were trigger-tested in isolated agent sessions (GLM-5.3-Flash — a flash-tier model), with every tool call verified from session logs:
+The three skills plus the routing rules were trigger-tested in isolated agent sessions (GLM-5.3-Flash — a flash-tier model), with every tool call verified from session logs. (The `j-space` row was measured on the previously bundled earlier copy, since replaced with the verbatim upstream SV1.):
 
 | Test prompt | Expected | Result |
 |---|---|---|
