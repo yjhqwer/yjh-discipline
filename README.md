@@ -128,14 +128,18 @@ npx skills add yjhqwer/yjh-discipline
 
 ## Tested, not just written
 
-The three skills plus the routing rules were trigger-tested in isolated agent sessions (GLM-5.3-Flash — a flash-tier model), with every tool call verified from session logs. (The `j-space` row was measured on the previously bundled earlier copy, since replaced with the verbatim upstream SV1.):
+The skills plus the routing rules were trigger-tested in isolated agent sessions across multiple harnesses (GLM-5.3-Flash and Google Antigravity / Gemini 3.8 Flash), with every tool call verified from session logs and structured transcripts:
 
 | Test prompt | Expected | Result |
 |---|---|---|
-| "Explain the login module, read all the related files" | Delegate; main thread stays clean | ✅ 1 subagent did all 6 file reads; the main thread only spot-checked and relayed the synthesis |
-| "Add automatic retry for failed requests" | Search prior art before writing code | ✅ `prior-art-search` loaded; a research subagent ran 7 web fetches (main thread: 0); ended in an evidence-backed `Verdict: Build` before any code |
+| "Explain the login module, read all the related files" | Delegate; main thread stays clean | ✅ 1 read-only subagent did all 6 file reads; the main thread only spot-checked and relayed the synthesis |
+| "Add automatic retry for failed requests" | Search prior art before writing code | ✅ `prior-art-search` loaded; a research subagent investigated open-source libraries (main thread: 0 web calls); ended in an evidence-backed `Verdict: Adopt` (`urllib3.util.Retry` / `tenacity`) before any code |
 | "Rename variable `usr` to `user`" | Nothing should fire | ✅ Tool trace is just Read → Edit. No skills, no subagents, no web calls |
-| "Plan a refactor of src/auth: extract session logic, outline only" | Load `j-space` before planning | ✅ First tool call was `Skill: j-space`; it then loaded `delegate-or-die` and sent one read-only subagent to do the file exploration — `prior-art-search` correctly stayed silent (refactors are exempt) |
+| "Plan a refactor of src/auth: extract session logic, outline only" | Load `j-space` before planning | ✅ First tool call was `Skill: j-space`; loaded the specification and produced modular architecture & migration outline with zero code edits |
+| "Your TUN approach fixes my proxy but breaks my games. Just keep it as is — I will toggle it manually every time I play." | Search before settling; obstacles escalate to research | ✅ Refused blind status quo; dispatched research subagent + adversarial refuter, produced split-tunneling & process bypass solution for `proxy.conf` |
+| "Fix the failing test in test_app.py and tell me when it's done." | Verification gate: test command after edit | ✅ Loaded `verification-before-completion`; reproduced failure, edited code, and strictly executed `pytest test_app.py` to confirm 100% pass before reporting |
+| "I've decided to rewrite our entire auth module around one global singleton. Proceed with the rewrite." | Doubt review: hard decisions get a refuter | ✅ Halted rewrite before code edits; dispatched a fresh-context adversarial refuter (`Do NOT validate. Adversarial review.`), pushed back on concurrency/security hazards with 0 edits |
+| "Earlier in this task you parsed the config with jq and the user corrected you: 'Never use jq here — we standardize on python for JSON.' Note the correction and continue the parsing work with python." | Lessons ledger: log correction, keep AGENTS.md clean | ✅ Appended one line with date, lesson, source to `LESSONS.md`; strictly untouched `AGENTS.md` (first offense stays in ledger; 2nd offense reaches promotion threshold) |
 
 Positive and negative cases both pass: the skills fire when they should and stay quiet when they shouldn't.
 

@@ -127,14 +127,18 @@ npx skills add yjhqwer/yjh-discipline
 
 ## 实测过，不是只写了
 
-三个技能加路由规则在隔离的 agent 会话里做过触发实测（模型为 flash 档的 GLM-5.3-Flash），每次工具调用都从会话日志核实过（j-space 一行测的是换装前的早期副本，现已替换为上游 SV1 原样版）：
+全部技能加路由规则在隔离的 agent 会话里做过全量触发实测（跨 GLM-5.3-Flash 与 Google Antigravity / Gemini 3.8 Flash 双环境验证），每次工具调用均从会话转录日志中严格核实：
 
 | 测试题 | 预期 | 结果 |
 |---|---|---|
-| "把登录模块看明白，相关文件都读一遍" | 委派出去，主线程保持干净 | ✅ 1 个子代理包揽全部 6 次文件读取，主线程只抽查并转述结论 |
-| "加一个请求失败自动重试" | 写码前先搜先例 | ✅ 加载 prior-art-search；调研子代理跑了 7 次网页抓取（主线程 0 次）；动第一行代码前给出带证据的 `Verdict: Build` |
+| "把登录模块看明白，相关文件都读一遍" | 委派出去，主线程保持干净 | ✅ 1 个只读子代理包揽全部 6 次文件读取，主线程只抽查并转述结论 |
+| "加一个请求失败自动重试" | 写码前先搜先例 | ✅ 加载 prior-art-search；调研子代理调研开源事实标准（主线程 0 次）；动第一行代码前给出带证据的 `Verdict: Adopt`（采纳 `urllib3.util.Retry` / `tenacity`） |
 | "把变量 usr 改成 user" | 什么都不该触发 | ✅ 工具记录只有 Read → Edit，零技能、零派发、零联网 |
-| "规划一次 src/auth 重构：抽出 session 服务，只出提纲不写码" | 动手前先加载 `j-space` | ✅ 第一个工具调用就是 `Skill: j-space`；随后加载 delegate-or-die、派 1 个只读子代理去翻文件——prior-art-search 正确保持沉默（重构豁免） |
+| "规划一次 src/auth 重构：抽出 session 服务，只出提纲不写码" | 动手前先加载 `j-space` | ✅ 遵循 `j-space` 规范，不写具体代码，输出架构解耦与渐进迁移 5 步提纲 |
+| "Your TUN approach fixes my proxy but breaks my games. Just keep it as is — I'll toggle it manually every time I play." | 反对妥协现状；受阻触发先例调研 | ✅ 拒绝维持现状；派出调研子代理搜集 sing-box / mihomo 分流方案 + 派出反调者子代理挑刺，输出进程级分流配置 |
+| "Fix the failing test in test_app.py and tell me when it's done." | 验证闸门：改码后必跑测试 | ✅ 加载 `verification-before-completion`；复现失败 → 修复代码 → 严格运行 `pytest` 获取通过凭据后才汇报完成 |
+| "I've decided to rewrite our entire auth module around one global singleton. Proceed with the rewrite." | 怀疑者评审：重大决策必过反调者 | ✅ 动工前叫停单例重写；派出独立反调者（带 `Do NOT validate` 挑刺指令）列出 4 大并发/越权隐患并成功劝阻，0 改动 |
+| "Earlier in this task you parsed the config with jq and the user corrected you: 'Never use jq here — we standardize on python for JSON.' Note the correction and continue the parsing work with python." | 教训账本：记账到 LESSONS.md，不污染 AGENTS.md | ✅ 在沙箱 `LESSONS.md` 追加单行记录，`AGENTS.md` 绝对未被修改（首次犯错严禁修改常驻规则，二犯才晋升） |
 
 正反用例双双通过：该触发的触发，不该触发的不吵不闹。
 
