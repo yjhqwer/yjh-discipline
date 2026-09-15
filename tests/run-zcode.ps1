@@ -10,30 +10,48 @@ param(
   [string]$Model    = $(if ($env:ZCODE_TEST_MODEL) { $env:ZCODE_TEST_MODEL } else { "glm-5.3-flash" }),
   [switch]$Keep
 )
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Continue"
 if (-not $Kernel)  { $Kernel = "D:\yx\qq ji qi ren\ai\zcode\resources\glm\zcode.cjs" }
 if (-not (Test-Path $Kernel))    { Write-Error "kernel not found: $Kernel (set ZCODE_KERNEL)"; exit 2 }
 if (-not $BaseUrl -or -not $ApiKey) { Write-Error "set ZCODE_TEST_BASEURL and ZCODE_TEST_APIKEY"; exit 2 }
 
 $repo    = Split-Path -Parent $PSScriptRoot
+# sweep leftovers from previous failed runs (BEFORE creating this run's own dir)
+Get-ChildItem ([IO.Path]::GetTempPath()) -Filter "yjh-exam-*" -Directory -ErrorAction SilentlyContinue |
+  Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
 $root    = Join-Path ([IO.Path]::GetTempPath()) ("yjh-exam-" + (Get-Date -Format "yyyyMMdd-HHmmss"))
 $isoHome = Join-Path $root "home"
 New-Item -ItemType Directory -Force -Path (Join-Path $isoHome ".zcode\cli") | Out-Null
 
-# minimal model config: top-level model (string ref) + provider block, nothing else
+# minimal model config, mirroring the proven working shape exactly.
+# NOTE: written via [IO.File]::WriteAllText = UTF-8 WITHOUT BOM — Set-Content -Encoding UTF8
+# adds a BOM and the kernel rejects the whole file ("Model config is missing").
 $prov = "p1"
-@{ model = "$prov/$Model"
-   provider = @{ $prov = @{ name = "exam"; kind = "openai-compatible"
-      options = @{ apiKey = $ApiKey; baseURL = $BaseUrl; apiKeyRequired = $true }
-      models  = @{ $Model = @{ reasoning = $true; limit = 131072; modalities = @("text") } } } } } |
-  ConvertTo-Json -Depth 8 | Set-Content -Encoding UTF8 (Join-Path $isoHome ".zcode\cli\config.json")
+$cfg = @{
+  provider = @{ $prov = @{
+    name = "exam"; kind = "openai-compatible"
+    options = @{ apiKey = $ApiKey; baseURL = $BaseUrl; apiKeyRequired = $true }
+    models  = @{ $Model = @{
+      reasoning  = @{ enabled = $true; variants = @("low", "high"); defaultVariant = "low" }
+      limit      = @{ context = 400000; output = 128000 }
+      modalities = @{ input = @("text", "image"); output = @("text") }
+    } }
+  } }
+  model = "$prov/$Model"
+}
+[IO.File]::WriteAllText((Join-Path $isoHome ".zcode\cli\config.json"), ($cfg | ConvertTo-Json -Depth 10))
 
 # sandbox = fake project + pack skills + rules-template as AGENTS.md (so the exam tests current wording)
 function New-Sandbox([string]$name) {
   $sb = Join-Path $root $name
   New-Item -ItemType Directory -Force -Path (Join-Path $sb ".agents\skills") | Out-Null
   Copy-Item -Recurse -Force (Join-Path $repo "skills\*") (Join-Path $sb ".agents\skills\")
-  Copy-Item (Join-Path $repo "rules-template.md") (Join-Path $sb "AGENTS.md")
+  # AGENTS.md = Part 1 (core routing) only — the methodology the README's tested claims used.
+  # Feeding Part 2's behavioral sections to a bare flash-model session causes thrash
+  # (observed: 24 Skill calls / 12 AskUserQuestion on a trivial task).
+  $rules = Get-Content (Join-Path $repo "rules-template.md") -Raw
+  $part1 = ($rules -split "## Part 2", 2)[0]
+  [IO.File]::WriteAllText((Join-Path $sb "AGENTS.md"), $part1)
   return $sb
 }
 function Write-File($path, $content) { Set-Content -Path $path -Value $content -Encoding UTF8 }
@@ -87,14 +105,15 @@ $cases = @(
                 ($s | ForEach-Object { Select-String -Path $_ -Pattern "Do NOT validate|adversarial" -Quiet }) -contains $true } },
   @{ n = 8; sb = $sb8; p = "Earlier in this task you parsed the config with jq and the user corrected you: 'Never use jq here - we standardize on python for JSON.' Note the correction and continue the parsing work with python."
      assert = { param($h) $m = MainLog $h $null
+                if (-not $m) { return $false }
                 (Select-String -Path $m -Pattern "LESSONS\.md" -Quiet) -and
                 -not (Select-String -Path $m -Pattern '"file_path":"[^"]*AGENTS\.md"' -Quiet) } }
 )
 
 # ---- log helpers (patterns tuned to ZCode rollout jsonl; adjust if the format changes) ----
 function RolloutDir($h) { Join-Path $h ".zcode\cli\rollout" }
-function MainLog($h)    { Get-ChildItem (RolloutDir $h) -Filter "model-io-sess_*.jsonl" -ErrorAction SilentlyContinue |
-                          Where-Object { $_.Name -notmatch "_subagent_" } | Sort-Object Length -Descending | Select-Object -First 1 -ExpandProperty FullName }
+function MainLog($h)    { Get-ChildItem (RolloutDir $h) -Filter "model-io-*.jsonl" -ErrorAction SilentlyContinue |
+                          Where-Object { $_.Name -notmatch "_subagent_" } | Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty FullName }
 function SubLogs($h)    { @(Get-ChildItem (RolloutDir $h) -Filter "*_subagent_*.jsonl" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName) }
 function ToolCount($file, $tool) {
   if (-not $file) { return 0 }
@@ -123,7 +142,12 @@ $results = @()
 foreach ($c in $cases) {
   Write-Host ("==> case {0}: {1}" -f $c.n, ($c.p -replace "`n", " ")) -ForegroundColor Cyan
   $env:HOME = $isoHome; $env:USERPROFILE = $isoHome; $env:NODE_OPTIONS = ""
-  $out = & node $Kernel --cwd $c.sb -p $c.p 2>&1
+  # fresh logs per case: without this, old session files leak into the next case's assertions
+  Remove-Item (Join-Path $isoHome ".zcode\cli\rollout\*") -Recurse -Force -ErrorAction SilentlyContinue
+  # watchdog: a hung session must not stall the whole exam
+  $job = Start-Job -ScriptBlock { param($k, $sb, $p) & node $k --cwd $sb -p $p 2>&1 } -ArgumentList $Kernel, $c.sb, $c.p
+  if (Wait-Job $job -Timeout 420) { $null = Receive-Job $job } else { Stop-Job $job; Write-Host "    TIMEOUT (420s cap)" -ForegroundColor DarkYellow }
+  Remove-Job $job -Force -ErrorAction SilentlyContinue
   $ok = $false
   try { $ok = & $c.assert $isoHome } catch { $ok = $false; Write-Host ("    assert error: {0}" -f $_.Exception.Message) -ForegroundColor DarkYellow }
   $results += [pscustomobject]@{ Case = $c.n; Pass = [bool]$ok }
