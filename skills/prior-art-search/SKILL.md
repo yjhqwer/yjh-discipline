@@ -9,7 +9,7 @@ description: "Mandatory pre-implementation research skill. Search GitHub, offici
 
 Before designing architecture, writing non-trivial features, creating skills, or synthesizing configurations (rules files, CI/CD, Docker), search for existing solutions first. Do not invent from imagination.
 
-**Settling counts as building.** When the current approach fails, breaks something else, or survives only through manual workarounds, search for a better method before recommending the user keep the status quo. "Keep the status quo" is a verdict like any other: it needs evidence that no better method exists — not just that the workaround was easy.
+**Settling counts as building.** When the current approach fails, breaks something else, or survives only through manual workarounds, run this skill before recommending the user keep the status quo. "No better method exists" is a conclusion only a completed search can earn — most such conclusions come from incomplete searches. Present "do nothing" alongside the realistic alternatives and justify it with the same evidence as any other verdict.
 
 ---
 
@@ -86,7 +86,7 @@ Every prior-art investigation must conclude with this concise structured format 
 - **Known Pitfalls**: [Key gotchas or anti-patterns discovered during research]
 ```
 
-One-line variant for small passes: `Verdict: <Adopt|Extend|Compose|Build> — <target or "custom"> — <evidence-based reason>`. A pass that searches but records no verdict line is incomplete.
+One-line variant for small passes: `Verdict: <Adopt|Extend|Compose|Build> — <target or "custom"> — <evidence-based reason>`. A pass that searches but records no verdict line is incomplete. When the search ends in **Settle** (keep the status quo), the verdict needs the same rigor as a Build: name the realistic alternatives considered — including "do nothing" — and the impact of not acting.
 
 ---
 

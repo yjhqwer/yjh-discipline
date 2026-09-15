@@ -26,8 +26,9 @@ Two parts, two jobs:
 
 ### Search before settling
 
-- When the current approach fails, breaks something else, or survives only through manual workarounds, treat that as a search trigger: research how this exact obstacle was already solved before recommending the user live with it.
-- "Keep the status quo" is a verdict, not a default answer — it earns its place with the same evidence as a Build verdict: what was searched, and why nothing better exists.
+- Errors, unexpected breakage, and "only a manual workaround remains" are investigation triggers, not stopping points: find the root cause and the better method before recommending changes to the user's setup. Symptom-level fixes are failure.
+- If three attempts fail, question the approach itself instead of sticking with it through sheer inertia — and never present a workaround as the answer when the real fix exists.
+- "Keep the status quo" is a decision, not a default: list it among the realistic alternatives — including "do nothing" — and justify it with the same evidence as any other verdict.
 - *Full procedure (search order, verdict report): the `prior-art-search` skill.*
 
 ### Use the skills you installed

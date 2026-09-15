@@ -144,6 +144,8 @@ npx skills add yjhqwer/yjh-discipline
 - [shimo4228/search-first](https://github.com/shimo4228/search-first) 与 [anombyte93/claude-research-skill](https://github.com/anombyte93/claude-research-skill)——先例检索 SOP
 - [techygarg 的 subagent-cost-economy](https://gist.github.com/techygarg/f8f98a2f026538fad4a69b593a964d95)——"保护主线程、委派调研"的成本论证
 - [jbarbier/CLAUDE.md](https://github.com/jbarbier/CLAUDE.md)——规则文件作为"工作契约"的提法
+- [SuperClaude-Org/SuperClaude_Framework](https://github.com/SuperClaude-Org/SuperClaude_Framework)——"失败调查"触发框架：把报错与残留绕路明示为调查触发器（"修根因，别绕路"）
+- [decision-records/decision-records](https://github.com/decision-records/decision-records)——"包含'什么都不做'"的备选方案格式：保留现状是一个决策，不是默认
 - Karpathy 精神的极简规则集：[multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)、[vinta/hal-9000](https://github.com/vinta/hal-9000)
 - [Tiger3807861189 的 J-Space Cognition Suite](https://github.com/Tiger3807861189/J-Space-Cognition-Suite)——随仓库发布的 `j-space` 技能是该套件的原样副本（对齐上游 SV1），按其 Apache-2.0 许可证转发（许可证与第三方声明已附在技能文件夹内）
 - Anthropic 的可解释性研究：[《Verbalizable Representations Form a Global Workspace in Language Models》](https://transformer-circuits.pub/2026/workspace/index.html)（Gurnee、Sofroniew、Lindsey 等，2026 年 7 月）——**J-space** 的发现；随仓库发布的 j-space 套件构建在这一发现之上
