@@ -146,10 +146,10 @@ This repo is an *Extend*, not a *Build* — it composes ideas the community alre
 - [techygarg's subagent-cost-economy](https://gist.github.com/techygarg/f8f98a2f026538fad4a69b593a964d95) — the "protect the main thread, delegate the research" cost argument
 - [jbarbier/CLAUDE.md](https://github.com/jbarbier/CLAUDE.md) — the rules-file-as-working-contract framing
 - Minimal rules collections in the Karpathy spirit: [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills), [vinta/hal-9000](https://github.com/vinta/hal-9000)
-- [Tiger3807861189's J-Space Cognition Suite](https://github.com/Tiger3807861189/J-Space-Cognition-Suite) — the bundled `j-space` skill is a locally modified copy of this suite, redistributed under its Apache-2.0 license (license and notices included in the skill folder)
-- Anthropic's interpretability research, [*"Verbalizable Representations Form a Global Workspace in Language Models"*](https://transformer-circuits.pub/2026/workspace/index.html) (Gurnee, Sofroniew, Lindsey et al., July 2026) — the discovery of **J-space** that both the upstream suite and this repo build on
+- [Tiger3807861189's J-Space Cognition Suite](https://github.com/Tiger3807861189/J-Space-Cognition-Suite) — the bundled `j-space` skill is a verbatim copy of this suite (tracking upstream SV1), redistributed under its Apache-2.0 license (license and notices included in the skill folder)
+- Anthropic's interpretability research, [*"Verbalizable Representations Form a Global Workspace in Language Models"*](https://transformer-circuits.pub/2026/workspace/index.html) (Gurnee, Sofroniew, Lindsey et al., July 2026) — the discovery of **J-space**; the bundled j-space suite is built on this finding
 
-No text from these projects is included — what's borrowed is the ideas, and by this repo's own rules, ideas get credited.
+Except for the `j-space` suite, which is redistributed verbatim under its own license, no text from these projects is included — what's borrowed is the ideas, and by this repo's own rules, ideas get credited.
 
 The Trinity framing — rules route, skills instruct, subagents execute, and all three are required — is the delta.
 

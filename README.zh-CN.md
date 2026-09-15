@@ -145,10 +145,10 @@ npx skills add yjhqwer/yjh-discipline
 - [techygarg 的 subagent-cost-economy](https://gist.github.com/techygarg/f8f98a2f026538fad4a69b593a964d95)——"保护主线程、委派调研"的成本论证
 - [jbarbier/CLAUDE.md](https://github.com/jbarbier/CLAUDE.md)——规则文件作为"工作契约"的提法
 - Karpathy 精神的极简规则集：[multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)、[vinta/hal-9000](https://github.com/vinta/hal-9000)
-- [Tiger3807861189 的 J-Space Cognition Suite](https://github.com/Tiger3807861189/J-Space-Cognition-Suite)——随仓库发布的 `j-space` 技能是该套件的本地修改版副本，按其 Apache-2.0 许可证转发（许可证与第三方声明已附在技能文件夹内）
-- Anthropic 的可解释性研究：[《Verbalizable Representations Form a Global Workspace in Language Models》](https://transformer-circuits.pub/2026/workspace/index.html)（Gurnee、Sofroniew、Lindsey 等，2026 年 7 月）——**J-space** 的发现，上游套件与本仓库都构建在这一发现之上
+- [Tiger3807861189 的 J-Space Cognition Suite](https://github.com/Tiger3807861189/J-Space-Cognition-Suite)——随仓库发布的 `j-space` 技能是该套件的原样副本（对齐上游 SV1），按其 Apache-2.0 许可证转发（许可证与第三方声明已附在技能文件夹内）
+- Anthropic 的可解释性研究：[《Verbalizable Representations Form a Global Workspace in Language Models》](https://transformer-circuits.pub/2026/workspace/index.html)（Gurnee、Sofroniew、Lindsey 等，2026 年 7 月）——**J-space** 的发现；随仓库发布的 j-space 套件构建在这一发现之上
 
-本仓库没有复制上述任何项目的文本——借的是思想，而按本仓库自己的规则，借了思想就要署名。
+除按许可证原样转发的 `j-space` 套件外，本仓库没有复制上述任何项目的文本——其余借的是思想，而按本仓库自己的规则，借了思想就要署名。
 
 "三位一体"框架——规则负责路由、技能负责方法、子代理负责执行、三者缺一不可——是本仓库的增量。
 
