@@ -92,8 +92,11 @@ Which layer fixes which failure mode — and why the split is not negotiable:
 ```
 yjh-discipline/
 ├── rules-template.md              # The watchdog: paste into AGENTS.md / CLAUDE.md / GEMINI.md
+├── tests/                         # The trigger exam: 8 cases + a ZCode runner — rerun after any rules change
 └── skills/
     ├── prior-art-search/SKILL.md  # Search-before-building SOP + verdict ladder
+    ├── verification-before-completion/SKILL.md  # Evidence-before-claims gate
+    ├── doubt-driven-development/SKILL.md        # Fresh-context refuter for hard decisions
     ├── delegate-or-die/SKILL.md   # When to delegate + the self-contained brief format
     └── j-space/                   # A thinking workspace for non-trivial work (upstream SV1: 13 modules, 7 references, controller scripts)
 ```
@@ -141,12 +144,14 @@ Positive and negative cases both pass: the skills fire when they should and stay
 This repo is an *Extend*, not a *Build* — it composes ideas the community already proved:
 
 - [anthropics/skills](https://github.com/anthropics/skills) — the Agent Skills format and ecosystem
-- [obra/superpowers](https://github.com/obra/superpowers) — proof that skills-based discipline works at scale (and the case for staying lightweight: this repo is ~2% the size)
+- [obra/superpowers](https://github.com/obra/superpowers) — proof that skills-based discipline works at scale (and the case for staying lightweight: this repo is ~2% the size); source pattern for `verification-before-completion`
 - [shimo4228/search-first](https://github.com/shimo4228/search-first) & [anombyte93/claude-research-skill](https://github.com/anombyte93/claude-research-skill) — search-before-building SOPs
 - [techygarg's subagent-cost-economy](https://gist.github.com/techygarg/f8f98a2f026538fad4a69b593a964d95) — the "protect the main thread, delegate the research" cost argument
 - [jbarbier/CLAUDE.md](https://github.com/jbarbier/CLAUDE.md) — the rules-file-as-working-contract framing
 - [SuperClaude-Org/SuperClaude_Framework](https://github.com/SuperClaude-Org/SuperClaude_Framework) — the failure-investigation framing: errors and leftover workarounds as explicit research triggers ("fix, don't workaround")
 - [decision-records/decision-records](https://github.com/decision-records/decision-records) — the "including 'do nothing'" considered-options pattern: the status quo is a decision, not a default
+- [juliusbrussee/caveman](https://github.com/juliusbrussee/caveman) — the "verify, then stop" anti-thrash gate
+- [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) — the doubt-driven-development refuter pattern
 - Minimal rules collections in the Karpathy spirit: [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills), [vinta/hal-9000](https://github.com/vinta/hal-9000)
 - [Tiger3807861189's J-Space Cognition Suite](https://github.com/Tiger3807861189/J-Space-Cognition-Suite) — the bundled `j-space` skill is a verbatim copy of this suite (tracking upstream SV1), redistributed under its Apache-2.0 license (license and notices included in the skill folder)
 - Anthropic's interpretability research, [*"Verbalizable Representations Form a Global Workspace in Language Models"*](https://transformer-circuits.pub/2026/workspace/index.html) (Gurnee, Sofroniew, Lindsey et al., July 2026) — the discovery of **J-space**; the bundled j-space suite is built on this finding

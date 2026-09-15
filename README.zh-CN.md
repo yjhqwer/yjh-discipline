@@ -91,8 +91,11 @@ agent 在主线程里干所有事：几十次 grep 和 read、整文件倾倒、
 ```
 yjh-discipline/
 ├── rules-template.md              # 看门狗：粘贴进 AGENTS.md / CLAUDE.md / GEMINI.md
+├── tests/                         # 触发实测考卷：8 题 + ZCode 跑分脚本——改规则后必重考
 └── skills/
     ├── prior-art-search/SKILL.md  # 先例检索 SOP + 裁定阶梯
+    ├── verification-before-completion/SKILL.md  # 证据先于声明的验证闸门
+    ├── doubt-driven-development/SKILL.md        # 硬决策的全新上下文反调者
     ├── delegate-or-die/SKILL.md   # 委派时机 + 自足式简报格式
     └── j-space/                   # 非常规任务的思考工作区（上游 SV1：13 个模块、7 个参考、控制器脚本）
 ```
@@ -140,12 +143,14 @@ npx skills add yjhqwer/yjh-discipline
 本仓库是一次 *Extend* 而非 *Build*——它组合了社区已经验证过的想法：
 
 - [anthropics/skills](https://github.com/anthropics/skills)——Agent Skills 格式与生态
-- [obra/superpowers](https://github.com/obra/superpowers)——证明技能式纪律可以规模化有效（也反证了轻量的必要：本仓库只有它约 2% 的体积）
+- [obra/superpowers](https://github.com/obra/superpowers)——证明技能式纪律可以规模化有效（也反证了轻量的必要：本仓库只有它约 2% 的体积）；`verification-before-completion` 的来源模式
 - [shimo4228/search-first](https://github.com/shimo4228/search-first) 与 [anombyte93/claude-research-skill](https://github.com/anombyte93/claude-research-skill)——先例检索 SOP
 - [techygarg 的 subagent-cost-economy](https://gist.github.com/techygarg/f8f98a2f026538fad4a69b593a964d95)——"保护主线程、委派调研"的成本论证
 - [jbarbier/CLAUDE.md](https://github.com/jbarbier/CLAUDE.md)——规则文件作为"工作契约"的提法
 - [SuperClaude-Org/SuperClaude_Framework](https://github.com/SuperClaude-Org/SuperClaude_Framework)——"失败调查"触发框架：把报错与残留绕路明示为调查触发器（"修根因，别绕路"）
 - [decision-records/decision-records](https://github.com/decision-records/decision-records)——"包含'什么都不做'"的备选方案格式：保留现状是一个决策，不是默认
+- [juliusbrussee/caveman](https://github.com/juliusbrussee/caveman)——"验证通过即停手"的反折腾闸门
+- [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills)——doubt-driven-development 反调者模式
 - Karpathy 精神的极简规则集：[multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)、[vinta/hal-9000](https://github.com/vinta/hal-9000)
 - [Tiger3807861189 的 J-Space Cognition Suite](https://github.com/Tiger3807861189/J-Space-Cognition-Suite)——随仓库发布的 `j-space` 技能是该套件的原样副本（对齐上游 SV1），按其 Apache-2.0 许可证转发（许可证与第三方声明已附在技能文件夹内）
 - Anthropic 的可解释性研究：[《Verbalizable Representations Form a Global Workspace in Language Models》](https://transformer-circuits.pub/2026/workspace/index.html)（Gurnee、Sofroniew、Lindsey 等，2026 年 7 月）——**J-space** 的发现；随仓库发布的 j-space 套件构建在这一发现之上
