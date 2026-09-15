@@ -39,6 +39,8 @@ Subagents know nothing. They inherit no conversation, no project memory, no inte
 
 **Quality over budget.** Do not cap tokens or tool calls — caps make agents timid and produce truncated work. Define the output contract instead; contracts make agents precise. The goal is one-pass completion, not cheapest completion.
 
+**Adversarial brief (doubt review).** The refuter variant strips the brief to two parts: the ARTIFACT (the decision or plan to attack, with zero author justification) and the CONTRACT (acceptance criteria). The mission is only to refute — no validation, no summaries; every gap reported as *claim → why it fails → what evidence would change your mind*. Cap at 3 cycles, then escalate to the human. *Full procedure: the `doubt-driven-development` skill.*
+
 ## 3. The output contract
 
 Every delegated task returns:

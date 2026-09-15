@@ -31,6 +31,22 @@ Two parts, two jobs:
 - "Keep the status quo" is a decision, not a default: list it among the realistic alternatives — including "do nothing" — and justify it with the same evidence as any other verdict.
 - *Full procedure (search order, verdict report): the `prior-art-search` skill.*
 
+### Verify before you claim it
+
+- Before claiming work complete, fixed, or passing, run the check that proves it and read the result — evidence before assertions, on every claim. Evidence scales to the claim but never to zero.
+- After proof passes, stop: report commands, results, and unresolved risk. Verification ends a task; it does not open a new one.
+- *Full procedure (the claim/proof table, five-step gate): the `verification-before-completion` skill.*
+
+### Doubt before it stands
+
+- Decisions that are hard to reverse — architecture, config design, irreversible blast radius, and prior-art verdicts (Adopt/Extend/Compose/Build) — get a fresh-context refuter before they stand. The refuter receives the artifact and its acceptance criteria, never the author's reasoning; its only job is finding what is wrong. Three refuted cycles go to the human.
+- *Full procedure (triggers, exclusions, refuter brief): the `doubt-driven-development` skill.*
+
+### Keep a lessons ledger
+
+- When the user corrects you, append the lesson to a dedicated ledger file: date, the lesson in one line, the source. Do not touch the instruction file for a first offense.
+- When the same lesson fires a second time, propose it as one standing line in the instruction file — second offense is the promotion threshold, matching the official "after two failed corrections, change the approach" rule.
+
 ### Use the skills you installed
 
 - Skills are lazy-loaded: an installed skill does nothing until you check for it. Before starting non-trivial work, check the available skill list and load any that matches the task.
