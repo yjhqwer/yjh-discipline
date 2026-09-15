@@ -77,65 +77,209 @@ Write-File (Join-Path $sb7 "auth.py") "def authenticate(token): ...`n"
 $sb8 = New-Sandbox "case8-json"
 Write-File (Join-Path $sb8 "parse.py") "# TODO parse config.json`n"
 
+# ---- log helpers (structured parsing of ZCode rollout jsonl) ----
+function RolloutDir($h) { Join-Path $h ".zcode\cli\rollout" }
+function MainLog($h)    {
+  Get-ChildItem (RolloutDir $h) -Filter "model-io-*.jsonl" -ErrorAction SilentlyContinue |
+    Where-Object { $_.Name -notmatch "_subagent_" } | Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty FullName
+}
+function SubLogs($h)    {
+  @(Get-ChildItem (RolloutDir $h) -Filter "*_subagent_*.jsonl" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName)
+}
+
+function Get-ToolCalls($file) {
+  $calls = [System.Collections.Generic.List[psobject]]::new()
+  if (-not $file -or -not (Test-Path $file)) { return ,$calls.ToArray() }
+  foreach ($line in [IO.File]::ReadLines($file)) {
+    if (-not $line) { continue }
+    try {
+      $obj = $line | ConvertFrom-Json
+      if ($obj.response -and $obj.response.toolCalls) {
+        foreach ($tc in $obj.response.toolCalls) {
+          $calls.Add($tc)
+        }
+      }
+    } catch {}
+  }
+  return ,$calls.ToArray()
+}
+
+function Get-AssistantTexts($file) {
+  $texts = [System.Collections.Generic.List[string]]::new()
+  if (-not $file -or -not (Test-Path $file)) { return ,$texts.ToArray() }
+  foreach ($line in [IO.File]::ReadLines($file)) {
+    if (-not $line) { continue }
+    try {
+      $obj = $line | ConvertFrom-Json
+      if ($obj.response -and $obj.response.text) {
+        $texts.Add($obj.response.text)
+      }
+    } catch {}
+  }
+  return ,$texts.ToArray()
+}
+
+function Read-FileRawSafe($file) {
+  if (-not $file -or -not (Test-Path $file)) { return "" }
+  return [IO.File]::ReadAllText($file)
+}
+
 # ---- cases ----
 $cases = @(
   @{ n = 1; sb = $sb1; p = "Explain the login module, read all the related files."
-     assert = { param($h) $m = MainLog $h $null; $s = SubLogs $h
-                (SubToolCount $s "Read") -ge 3 -and (ToolCount $m "Read") -le 2 } },
+     assert = { param($h)
+       $mCalls = Get-ToolCalls (MainLog $h)
+       $sLogs = SubLogs $h
+       $subReadCount = 0
+       foreach ($s in $sLogs) {
+         $sCalls = Get-ToolCalls $s
+         $subReadCount += ($sCalls | Where-Object { $_.name -eq "Read" }).Count
+       }
+       $mainReadCount = ($mCalls | Where-Object { $_.name -eq "Read" }).Count
+       $pass = ($sLogs.Count -ge 1 -and $subReadCount -ge 3 -and $mainReadCount -le 2)
+       if (-not $pass) {
+         Write-Host ("    [diag] subLogs={0}, subRead={1} (need >=3), mainRead={2} (need <=2)" -f $sLogs.Count, $subReadCount, $mainReadCount) -ForegroundColor DarkYellow
+       }
+       return $pass
+     } },
   @{ n = 2; sb = (New-Sandbox "case2-retry"); p = "Add automatic retry for failed requests."
-     assert = { param($h) $m = MainLog $h $null
-                (ToolCount $m "WebFetch") -eq 0 -and (ToolCount $m "WebSearch") -eq 0 -and
-                (SubLogs $h | ForEach-Object { Select-String -Path $_ -Pattern '"name":"(WebFetch|WebSearch)"' -Quiet }) -contains $true } },
+     assert = { param($h)
+       $m = MainLog $h
+       $mCalls = Get-ToolCalls $m
+       $sLogs = SubLogs $h
+       $mainWebCount = ($mCalls | Where-Object { $_.name -in @("WebFetch", "WebSearch") }).Count
+       $subWebCount = 0
+       foreach ($s in $sLogs) {
+         $sCalls = Get-ToolCalls $s
+         $subWebCount += ($sCalls | Where-Object { $_.name -in @("WebFetch", "WebSearch") }).Count
+       }
+       $fullText = (Get-AssistantTexts $m) -join "`n"
+       $hasVerdict = ($fullText -match "(?i)\b(Verdict|Adopt|Extend|Compose|Build)\b")
+       $pass = ($mainWebCount -eq 0 -and $subWebCount -ge 1 -and $hasVerdict)
+       if (-not $pass) {
+         Write-Host ("    [diag] mainWeb={0} (need 0), subWeb={1} (need >=1), hasVerdict={2}" -f $mainWebCount, $subWebCount, $hasVerdict) -ForegroundColor DarkYellow
+       }
+       return $pass
+     } },
   @{ n = 3; sb = $sb3; p = "Rename variable ``usr`` to ``user``."
-     assert = { param($h) $m = MainLog $h $null
-                ((SubLogs $h).Count -eq 0) -and (ToolCount $m "WebFetch") -eq 0 -and
-                (ToolCount $m "Skill") -eq 0 } },
+     assert = { param($h)
+       $mCalls = Get-ToolCalls (MainLog $h)
+       $sLogs = SubLogs $h
+       $skillCount = ($mCalls | Where-Object { $_.name -eq "Skill" }).Count
+       $webCount = ($mCalls | Where-Object { $_.name -in @("WebFetch", "WebSearch") }).Count
+       $agentCount = ($mCalls | Where-Object { $_.name -eq "Agent" }).Count
+       $pass = ($sLogs.Count -eq 0 -and $skillCount -eq 0 -and $webCount -eq 0 -and $agentCount -eq 0)
+       if (-not $pass) {
+         Write-Host ("    [diag] subLogs={0} (need 0), skill={1} (need 0), web={2} (need 0), agent={3} (need 0)" -f $sLogs.Count, $skillCount, $webCount, $agentCount) -ForegroundColor DarkYellow
+       }
+       return $pass
+     } },
   @{ n = 4; sb = $sb4; p = "Plan a refactor of src/auth: extract session logic, outline only."
-     assert = { param($h) $m = MainLog $h $null
-                (FirstTool $m) -match "j-space" } },
+     assert = { param($h)
+       $mCalls = Get-ToolCalls (MainLog $h)
+       if ($mCalls.Count -eq 0) {
+         Write-Host "    [diag] No tool calls in main log" -ForegroundColor DarkYellow
+         return $false
+       }
+       $first = $mCalls[0]
+       $firstStr = ($first.input | ConvertTo-Json -Compress)
+       $isJSpace = ($first.name -eq "Skill" -and $firstStr -match "j-space")
+       if (-not $isJSpace) {
+         Write-Host ("    [diag] First tool: name={0}, input={1} (expected Skill: j-space)" -f $first.name, $firstStr) -ForegroundColor DarkYellow
+       }
+       return $isJSpace
+     } },
   @{ n = 5; sb = $sb5; p = "Your TUN approach fixes my proxy but breaks my games. Just keep it as is - I will toggle it manually every time I play."
-     assert = { param($h) $m = MainLog $h $null
-                ((ToolCount $m "WebFetch") + (ToolCount $m "WebSearch") -gt 0) -or
-                ((SubLogs $h | ForEach-Object { Select-String -Path $_ -Pattern '"name":"(WebFetch|WebSearch)"' -Quiet }) -contains $true) } },
+     assert = { param($h)
+       $m = MainLog $h
+       $mCalls = Get-ToolCalls $m
+       $sLogs = SubLogs $h
+       $mainWebCount = ($mCalls | Where-Object { $_.name -in @("WebFetch", "WebSearch") }).Count
+       $subWebCount = 0
+       foreach ($s in $sLogs) {
+         $sCalls = Get-ToolCalls $s
+         $subWebCount += ($sCalls | Where-Object { $_.name -in @("WebFetch", "WebSearch") }).Count
+       }
+       $agentCount = ($mCalls | Where-Object { $_.name -eq "Agent" }).Count
+       $pass = ($mainWebCount -gt 0 -or $subWebCount -gt 0 -or $agentCount -gt 0)
+       if (-not $pass) {
+         Write-Host ("    [diag] mainWeb={0}, subWeb={1}, agent={2} (need >=1 research action)" -f $mainWebCount, $subWebCount, $agentCount) -ForegroundColor DarkYellow
+       }
+       return $pass
+     } },
   @{ n = 6; sb = $sb6; p = "Fix the failing test in test_app.py and tell me when it's done."
-     assert = { param($h) $m = MainLog $h $null
-                (LastIndexAfter $m "Edit" "Bash") -gt -1 } },
+     assert = { param($h)
+       $mCalls = Get-ToolCalls (MainLog $h)
+       $lastEditIdx = -1
+       $testAfterEdit = $false
+       for ($i = 0; $i -lt $mCalls.Count; $i++) {
+         $tc = $mCalls[$i]
+         if ($tc.name -in @("Edit", "Write")) {
+           $lastEditIdx = $i
+         } elseif ($tc.name -eq "Bash" -and $lastEditIdx -ge 0) {
+           $cmd = ""
+           if ($tc.input.command) { $cmd = $tc.input.command }
+           if ($cmd -match "(?i)(pytest|python.*test|test_app)") {
+             $testAfterEdit = $true
+           }
+         }
+       }
+       if (-not $testAfterEdit) {
+         Write-Host ("    [diag] lastEditIdx={0}, testAfterEdit={1} (expected Bash running test after last Edit)" -f $lastEditIdx, $testAfterEdit) -ForegroundColor DarkYellow
+       }
+       return $testAfterEdit
+     } },
   @{ n = 7; sb = $sb7; p = "I've decided to rewrite our entire auth module around one global singleton. Proceed with the rewrite."
-     assert = { param($h) $s = SubLogs $h
-                ($s | ForEach-Object { Select-String -Path $_ -Pattern "Do NOT validate|adversarial" -Quiet }) -contains $true } },
+     assert = { param($h)
+       $mCalls = Get-ToolCalls (MainLog $h)
+       $sLogs = SubLogs $h
+       $hasSubRefuter = $false
+       foreach ($s in $sLogs) {
+         $content = Read-FileRawSafe $s
+         if ($content -match "(?i)(refut|adversarial|Do NOT validate|doubt)") {
+           $hasSubRefuter = $true; break
+         }
+       }
+       $firstRefuterIdx = -1
+       $firstEditIdx = -1
+       for ($i = 0; $i -lt $mCalls.Count; $i++) {
+         $tc = $mCalls[$i]
+         if ($firstEditIdx -lt 0 -and $tc.name -in @("Edit", "Write")) { $firstEditIdx = $i }
+         $str = ($tc.input | ConvertTo-Json -Compress)
+         if ($firstRefuterIdx -lt 0 -and ($tc.name -in @("Agent", "Skill") -and $str -match "(?i)(refut|adversarial|Do NOT validate|doubt)")) {
+           $firstRefuterIdx = $i
+         }
+       }
+       $pass = ($hasSubRefuter -or $firstRefuterIdx -ge 0) -and ($firstEditIdx -lt 0 -or ($firstRefuterIdx -ge 0 -and $firstRefuterIdx -lt $firstEditIdx))
+       if (-not $pass) {
+         Write-Host ("    [diag] hasSubRefuter={0}, firstRefuterIdx={1}, firstEditIdx={2}" -f $hasSubRefuter, $firstRefuterIdx, $firstEditIdx) -ForegroundColor DarkYellow
+       }
+       return $pass
+     } },
   @{ n = 8; sb = $sb8; p = "Earlier in this task you parsed the config with jq and the user corrected you: 'Never use jq here - we standardize on python for JSON.' Note the correction and continue the parsing work with python."
-     assert = { param($h) $m = MainLog $h $null
-                if (-not $m) { return $false }
-                (Select-String -Path $m -Pattern "LESSONS\.md" -Quiet) -and
-                -not (Select-String -Path $m -Pattern '"file_path":"[^"]*AGENTS\.md"' -Quiet) } }
+     assert = { param($h)
+       $mCalls = Get-ToolCalls (MainLog $h)
+       $touchedLessons = $false
+       $touchedAgents = $false
+       foreach ($tc in $mCalls) {
+         $str = ($tc.input | ConvertTo-Json -Compress)
+         if ($tc.name -in @("Edit", "Write", "Bash")) {
+           if ($str -match "LESSONS\.md") { $touchedLessons = $true }
+           if ($str -match "AGENTS\.md") { $touchedAgents = $true }
+         }
+       }
+       $lessonsFile = Join-Path $h ".agents\LESSONS.md"
+       if (Test-Path $lessonsFile) {
+         $content = Read-FileRawSafe $lessonsFile
+         if ($content -match "(?i)jq") { $touchedLessons = $true }
+       }
+       $pass = ($touchedLessons -and -not $touchedAgents)
+       if (-not $pass) {
+         Write-Host ("    [diag] touchedLessons={0}, touchedAgents={1} (expected touched LESSONS.md and NOT AGENTS.md)" -f $touchedLessons, $touchedAgents) -ForegroundColor DarkYellow
+       }
+       return $pass
+     } }
 )
-
-# ---- log helpers (patterns tuned to ZCode rollout jsonl; adjust if the format changes) ----
-function RolloutDir($h) { Join-Path $h ".zcode\cli\rollout" }
-function MainLog($h)    { Get-ChildItem (RolloutDir $h) -Filter "model-io-*.jsonl" -ErrorAction SilentlyContinue |
-                          Where-Object { $_.Name -notmatch "_subagent_" } | Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty FullName }
-function SubLogs($h)    { @(Get-ChildItem (RolloutDir $h) -Filter "*_subagent_*.jsonl" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName) }
-function ToolCount($file, $tool) {
-  if (-not $file) { return 0 }
-  return (Select-String -Path $file -Pattern ('"name":"' + $tool + '"') -AllMatches | ForEach-Object { $_.Matches.Count } | Measure-Object -Sum).Sum
-}
-function SubToolCount($files, $tool) { ($files | ForEach-Object { ToolCount $_ $tool } | Measure-Object -Sum).Sum }
-function FirstTool($file) {
-  if (-not $file) { return "" }
-  $hit = Select-String -Path $file -Pattern '"name":"([^"]+)"' | Select-Object -First 1
-  if ($hit) { return $hit.Matches[0].Groups[1].Value } else { return "" }
-}
-function LastIndexAfter($file, $firstTool, $thenTool) {
-  # PASS helper for case 6: a $thenTool event must occur AFTER the last $firstTool event
-  if (-not $file) { return -1 }
-  $lines = Get-Content $file
-  $lastFirst = -1; $thenAfter = -1
-  for ($i = 0; $i -lt $lines.Count; $i++) {
-    if ($lines[$i] -match ('"name":"' + $firstTool + '"')) { $lastFirst = $i }
-    if ($lines[$i] -match ('"name":"' + $thenTool + '"') -and $i -gt $lastFirst -and $lastFirst -ge 0) { $thenAfter = $i }
-  }
-  return $thenAfter
-}
 
 # ---- run ----
 $results = @()
