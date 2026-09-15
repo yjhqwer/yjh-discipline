@@ -24,6 +24,12 @@ Two parts, two jobs:
 - Bug fixes, refactors, and config-value edits don't need research. If the user says to skip research, skipping is itself a decision — note it in one line and proceed.
 - *Full procedure (search order, subagent sweeps, verdict report): the `prior-art-search` skill.*
 
+### Search before settling
+
+- When the current approach fails, breaks something else, or survives only through manual workarounds, treat that as a search trigger: research how this exact obstacle was already solved before recommending the user live with it.
+- "Keep the status quo" is a verdict, not a default answer — it earns its place with the same evidence as a Build verdict: what was searched, and why nothing better exists.
+- *Full procedure (search order, verdict report): the `prior-art-search` skill.*
+
 ### Use the skills you installed
 
 - Skills are lazy-loaded: an installed skill does nothing until you check for it. Before starting non-trivial work, check the available skill list and load any that matches the task.

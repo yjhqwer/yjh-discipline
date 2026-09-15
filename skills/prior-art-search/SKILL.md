@@ -1,6 +1,6 @@
 ---
 name: prior-art-search
-description: "Mandatory pre-implementation research skill. Search GitHub, official documentation, package registries, and existing battle-tested implementations before writing new features, rules files, skills, or architecture. Enforces the Adopt-Extend-Compose-Build hierarchy and delegates heavy search loops to subagents to prevent main-thread context bloat. Use before any non-trivial feature, skill, config, or library choice — not for bug fixes, refactors, or mechanical changes."
+description: "Mandatory pre-implementation research skill. Search GitHub, official documentation, package registries, and existing battle-tested implementations before writing new features, rules files, skills, or architecture. Enforces the Adopt-Extend-Compose-Build hierarchy and delegates heavy search loops to subagents to prevent main-thread context bloat. Use before any non-trivial feature, skill, config, or library choice — and whenever an existing approach fails or survives only on a workaround and 'keep the status quo' is tempting — not for bug fixes, refactors, or mechanical changes."
 ---
 
 # Prior Art Search (Search Before Building)
@@ -8,6 +8,8 @@ description: "Mandatory pre-implementation research skill. Search GitHub, offici
 **The best code and configurations are the ones already battle-tested by the global community.**
 
 Before designing architecture, writing non-trivial features, creating skills, or synthesizing configurations (rules files, CI/CD, Docker), search for existing solutions first. Do not invent from imagination.
+
+**Settling counts as building.** When the current approach fails, breaks something else, or survives only through manual workarounds, search for a better method before recommending the user keep the status quo. "Keep the status quo" is a verdict like any other: it needs evidence that no better method exists — not just that the workaround was easy.
 
 ---
 
