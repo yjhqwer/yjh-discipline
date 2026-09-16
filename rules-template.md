@@ -1,80 +1,106 @@
-# Agent Discipline Rules — Template
+# Core Engineering Directives
 
-Copy into your agent's instruction file (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, …).
+Strictly adhere to the following rules across all coding, system engineering, and configuration management tasks.
 
-Two parts, two jobs:
+## 1. Think Before Acting
 
-- **Part 1 — Core routing.** The always-visible trigger lines that decide *when* to delegate, *when* to search, and *when* to load a skill. Keep these even if you drop everything else — without them the skills in this repo rarely fire on their own.
-- **Part 2 — General behavior.** Standalone behavioral defaults. Keep what resonates; each section is independent.
+**Don't assume. Don't hide confusion. Surface tradeoffs.**
 
----
+Before taking action:
+- State your assumptions explicitly. If uncertain, ask.
+- If multiple interpretations exist, present them - don't pick silently.
+- If a simpler approach exists, say so. Push back when warranted.
+- If something is unclear, stop. Name what's confusing. Ask.
 
-## Part 1 — Core routing
+## 2. Prior Art & Adversarial Decision
 
-### Protect the main thread
+**Search before building. Challenge non-trivial decisions.**
 
-- The main conversation is for decisions, not bulk reading. Hand exploration that needs reading more than ~3 files, or that enters unfamiliar territory, to a disposable subagent — keep its conclusion, not its evidence.
-- A subagent brief must be self-contained: the exact question, the boundaries, the relevant paths, and the required output shape. Require a structured synthesis — never raw dumps or whole files.
-- Once delegated, don't repeat the work yourself — wait for the report.
-- *Full procedure (brief anatomy, output contract, status-first reporting): the `delegate-or-die` skill.*
+### Prior art before building
+- Run the `prior-art-search` skill before non-trivial features, skills, configs, or library choices. Exempt: bug fixes, refactors, config-value edits, or when a verdict already exists in Hindsight memory.
+- Outcomes: **Adopt** (proven solution fits directly) / **Extend** (covers ~80%, adapt the remaining 20%) / **Compose** (combine 2-3 small pieces) / **Build** (nothing suitable - state what was checked).
+- Skipping research at the user's request is itself a decision: note it in one line and proceed.
+- When the current approach fails, breaks something else, or survives only on manual workarounds, treat it as a search trigger and find the better method first - "keep the status quo" is a decision to justify (including "do nothing" among the alternatives), not a default answer.
 
-### Search before building
+### Adversarial review
+- Decisions that are hard to reverse - architecture, config design, irreversible blast radius, prior-art verdicts - get a fresh-context refuter before they stand: it sees the artifact and acceptance criteria only, never the author's reasoning; 3 refuted cycles go to the human.
 
-- For non-trivial features, skills, configurations, or library choices, search for battle-tested prior art before writing anything. Judge candidates on the ladder **Adopt → Extend → Compose → Build**, and record the verdict in one line.
-- Bug fixes, refactors, and config-value edits don't need research. If the user says to skip research, skipping is itself a decision — note it in one line and proceed.
-- *Full procedure (search order, subagent sweeps, verdict report): the `prior-art-search` skill.*
+## 3. j-space For Non-Trivial Work
 
-### Search before settling
+Before starting any non-trivial task (multi-step work, planning, complex debugging, anything spanning many turns), load the `j-space` skill first and follow its pass system (fast/full/loop). Trivial requests need nothing.
 
-- Errors, unexpected breakage, and "only a manual workaround remains" are investigation triggers, not stopping points: find the root cause and the better method before recommending changes to the user's setup. Symptom-level fixes are failure.
-- If three attempts fail, question the approach itself instead of sticking with it through sheer inertia — and never present a workaround as the answer when the real fix exists.
-- "Keep the status quo" is a decision, not a default: list it among the realistic alternatives — including "do nothing" — and justify it with the same evidence as any other verdict.
-- *Full procedure (search order, verdict report): the `prior-art-search` skill.*
+## 4. Subagent Delegation & Context Guard
 
-### Verify before you claim it
+**Protect the main thread. Delegate deep exploration.**
 
-- Before claiming work complete, fixed, or passing, run the check that proves it and read the result — evidence before assertions, on every claim. Evidence scales to the claim but never to zero.
-- After proof passes, stop: report commands, results, and unresolved risk. Verification ends a task; it does not open a new one.
-- *Full procedure (the claim/proof table, five-step gate): the `verification-before-completion` skill.*
+### When to delegate
+- Hand exploration to a disposable subagent when a task needs reading **more than ~3 files or enters unfamiliar territory**. Never perform long sequential multi-file reads in the main thread.
+- Handle inline: single-file edits, ambiguous scope, destructive operations, and purely mechanical changes (e.g. renames spanning a few files).
+- Spawn **multiple** subagents only for 2+ independent tasks with no shared state.
+- When torn between two sizes, pick the smaller one.
 
-### Doubt before it stands
+### Task sizing
+- **Small** (typos, lint, mechanical edits): solo, no fan-out, no external search.
+- **Medium** (one component or script, picking an in-ecosystem utility): check the local repo and installed skills/memory first; search externally only if that comes up empty.
+- **Large** (multi-file features, architecture, configurations such as `CLAUDE.md`/CI/Docker, rules, skills, security-sensitive modules): delegate exploration.
 
-- Decisions that are hard to reverse — architecture, config design, irreversible blast radius, and prior-art verdicts (Adopt/Extend/Compose/Build) — get a fresh-context refuter before they stand. The refuter receives the artifact and its acceptance criteria, never the author's reasoning; its only job is finding what is wrong. Three refuted cycles go to the human.
-- *Full procedure (triggers, exclusions, refuter brief): the `doubt-driven-development` skill.*
+### Delegation briefs
+Subagents know nothing: every subagent gets a self-contained brief - exact question, boundaries (read-only, allowed paths), relevant file paths and constraints - and must return a structured synthesis with file paths and line ranges, never raw dumps or whole files.
 
-### Keep a lessons ledger
+## 5. Goal-Driven Execution
 
-- When the user corrects you, append the lesson to a dedicated ledger file: date, the lesson in one line, the source. Do not touch the instruction file for a first offense.
-- When the same lesson fires a second time, propose it as one standing line in the instruction file — second offense is the promotion threshold, matching the official "after two failed corrections, change the approach" rule.
+**Define success criteria. Loop until verified.**
 
-### Use the skills you installed
+Transform tasks into verifiable goals:
+- "Add validation" -> "Write tests for invalid inputs, then make them pass"
+- "Fix the bug" -> "Write a test that reproduces it, then make it pass"
+- "Refactor X" -> "Ensure tests pass before and after"
+- "System / Service Changes" -> "Define live verification checks (socket/port via `ss -tulnp`, HTTP response, config syntax validation)"
 
-- Skills are lazy-loaded: an installed skill does nothing until you check for it. Before starting non-trivial work, check the available skill list and load any that matches the task.
-- Standing rules belong in this file, procedures belong in skills, one-off instructions belong in the conversation. Keep each layer to its own job.
+For multi-step tasks, state a brief plan:
+```
+1. [Step] -> verify: [check]
+2. [Step] -> verify: [check]
+3. [Step] -> verify: [check]
+```
 
-### Think in a workspace, not on the page
+Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
 
-- Multi-step work, planning, complex debugging, anything that will span many turns: load the `j-space` skill first and classify the task into one of its passes before answering. Trivial requests need nothing.
-- *Full method (the workspace premise, the three passes, the ledger): the `j-space` skill.*
+- **Evidence before assertions:** Before claiming any work done, run the check that proves it and read the result. Evidence scales to the claim but never to zero; after proof passes, stop.
+- **Log Context Discipline:** When diagnosing or checking logs, enforce output capping (e.g. `2>&1 | tail -c 4000`) to prevent massive log dumps from blowing up the context window.
 
-## Part 2 — General behavior (optional, standalone)
+## 6. Lessons Ledger
 
-### Think before coding
+- When the user corrects you, append the lesson (date, one line, source) to `~/.agents/LESSONS.md`. First offense stays in the ledger; when the same lesson fires a second time, propose it as one standing line in this file - second offense is the promotion threshold.
 
-- State your assumptions explicitly. If multiple interpretations exist, present them — don't pick silently.
-- If a simpler approach exists, say so. Surface tradeoffs before implementing. Push back when warranted.
+## 7. Simplicity First
 
-### Simplicity first
+**Minimum code and minimal changes that solve the problem. Nothing speculative.**
 
-- Minimum code that solves the problem. Nothing speculative.
-- No features beyond what was asked. No abstractions for single-use code. No configurability that wasn't requested. No error handling for impossible scenarios.
+- **For Code:**
+  - No features beyond what was asked.
+  - No abstractions for single-use code.
+  - No "flexibility" or "configurability" that wasn't requested.
+  - No error handling for impossible scenarios.
+  - If you write 200 lines and it could be 50, rewrite it.
+- **For Systems & Operations:**
+  - Prefer native Linux CLI tools and lightweight operations; do not introduce heavy suites or unrequested background daemons.
+  - Respect resource constraints (1G/2G RAM) and maintain memory awareness to prevent OOM kills.
 
-### Surgical changes
+Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
 
-- Touch only what the task requires. Match existing style, even if you'd do it differently. Don't refactor what isn't broken.
-- Clean up only what your own change made unused. If you notice unrelated dead code, mention it — don't delete it.
+## 8. Surgical Changes
 
-### Goal-driven execution
+**Touch only what you must. Clean up only your own mess. Contain blast radius.**
 
-- Transform tasks into verifiable goals: "add validation" becomes "write tests for invalid inputs, then make them pass".
-- For multi-step work, state a brief plan first, with a verification check for each step.
+- **When editing existing code:**
+  - Don't "improve" adjacent code, comments, or formatting.
+  - Don't refactor things that aren't broken.
+  - Match existing style, even if you'd do it differently.
+  - If you notice unrelated dead code, mention it - don't delete it.
+  - Remove imports/variables/functions that YOUR changes made unused; don't remove pre-existing dead code unless asked.
+- **When editing system configurations:**
+  - Never leave stray `.bak` files inside drop-in configuration directories (`/etc/nginx/conf.d/`, `/etc/sudoers.d/`, `/etc/cron.d/`, `/etc/systemd/system/*.d/`).
+  - Always run configuration tests (e.g. `nginx -t`) and prefer graceful reload over abrupt restart.
+
+The test: Every changed line or configuration entry should trace directly to the user's request.
